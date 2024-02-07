@@ -28,6 +28,10 @@ Step 2: To practice these skills, we will use a dataset that I have already coll
 You can try this out yourself too: to obtain these data, you must first obtain an API key. Instructions on how to do this are available at the [Edinburgh Fringe API page](https://api.edinburghfestivalcity.com/documentation/fringe_approval):
 
 ![Alt Text](data/wordfreq/fringeapi.png)
+```{r}
+getwd()
+```
+
 
 ##  Load data and packages 
 
@@ -159,7 +163,6 @@ remove_reg <- c("&amp;","&lt;","&gt;","<p>", "</p>","&rsquo", "&lsquo;",  "&#39;
                   
 tidy_des <- tidy_des %>%
   filter(!word %in% remove_reg)
-
 ```
 
 ```{r}
@@ -389,6 +392,75 @@ Do we notice anything about these names? What does this tell us about the potent
 ## Exercises
 
 1. Filter the books by genre (selecting e.g., "Literature" or "Children") and plot frequency of women-related words over time.
+
+```{r}
+# Go through the same process. I've highlighted the differences
+evdes_genre <- edbfdata %>%
+  select(description, year, genre) # but include genre variable here
+
+evtsperyr_genre <- evdes_genre %>%
+  mutate(obs=1) %>%
+  group_by(year, genre) %>% # group not only by year but also by genre
+  summarise(sum_events = sum(obs))
+
+tidy_des_genre <- evdes_genre %>% 
+  mutate(desc = tolower(description)) %>%
+  unnest_tokens(word, desc) %>%
+  filter(str_detect(word, "[a-z]"))
+
+tidy_des_genre <- tidy_des_genre %>%
+  filter(!word %in% stop_words$word) %>%
+  filter(!word %in% remove_reg)
+
+edbf_term_counts_genre <- tidy_des_genre %>% 
+  group_by(year, genre) %>% # group not only by year but also by genre
+  count(word, sort = TRUE)
+
+edbf_term_counts_genre $womword <- as.integer(grepl("women|feminist|feminism|gender|harassment|sexism|sexist", 
+                                            x = edbf_term_counts_genre$word))
+
+edbf_counts_children <- edbf_term_counts_genre %>%
+  filter(genre == "Children") %>% # keep only 'Children' books
+  group_by(year) %>%
+  mutate(year_total = sum(n)) %>%
+  filter(womword==1) %>%
+  summarise(sum_wom = sum(n),
+            year_total= min(year_total))
+
+ggplot(edbf_counts_children, aes(year, sum_wom / year_total, group=1)) +
+  geom_line() +
+  xlab("Year") +
+  ylab("% gender-related words") +
+  scale_y_continuous(labels = scales::percent_format(),
+                     expand = c(0, 0), limits = c(0, NA)) +
+  theme_tufte(base_family = "Helvetica") 
+```
+
+```{r}
+# you could also show both genre on one plot
+edbf_counts_both <- edbf_term_counts_genre %>%
+  group_by(year, genre) %>% 
+  mutate(year_total = sum(n)) %>%
+  filter(womword==1) %>%
+  summarise(sum_wom = sum(n),
+            year_total= min(year_total))
+
+ggplot(edbf_counts_both, aes(year, sum_wom / year_total, group=genre, color=genre)) + # add the variable 'genre' as a group and color argument
+  geom_line() +
+  xlab("Year") +
+  ylab("% gender-related words") +
+  scale_y_continuous(labels = scales::percent_format(),
+                     expand = c(0, 0), limits = c(0, NA)) +
+  theme_tufte(base_family = "Helvetica") 
+```
+
+
 2. Choose another set of terms by which to filter (e.g., race-related words) and plot their frequency over time.
-3. Knit your document (click 'Knit' towards the top of your screen) when you've completed your exercise. It should create an html output file. We will 
+
+```{r}
+# show me
+```
+
+
+3. Knit your document (click 'Knit' towards the top of your screen) when you've completed your exercise. It should create an html output file. 
 
