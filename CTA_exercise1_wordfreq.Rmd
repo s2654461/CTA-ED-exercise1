@@ -13,7 +13,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Introduction
 
-In this tutorial, you will learn how to summarise, aggregate, and analyze text in R:
+In this exercise, you will learn how to summarise, aggregate, and analyze text in R:
 
 * How to tokenize and filter text
 * How to clean and preprocess text
@@ -35,7 +35,7 @@ getwd()
 
 ##  Load data and packages 
 
-Before proceeding, we'll load the remaining packages we will need for this tutorial.
+Before proceeding, we'll load the remaining packages we will need for this exercise.
 
 ```{r, message=F}
 library(tidyverse) # loads dplyr, ggplot2, and others
@@ -45,7 +45,7 @@ library(readr) # more informative and easy way to import data
 library(babynames) #for gender predictions
 ```
 
-For this tutorial, we will be using data that I have pre-cleaned and provided in .csv format. The data come from the Edinburgh Book Festival API, and provide data for every event that has taken place at the Edinburgh Book Festival, which runs every year in the month of August, for nine years: 2012-2020. There are many questions we might ask of these data. In this tutorial, we will investigate the contents of each event, and the speakers at each event, to determine if there are any trends in gender representation over time.
+For this exercise, we will be using data that I have pre-cleaned and provided in .csv format. The data come from the Edinburgh Book Festival API, and provide data for every event that has taken place at the Edinburgh Book Festival, which runs every year in the month of August, for nine years: 2012-2020. There are many questions we might ask of these data. In this exercise, we will investigate the contents of each event, and the speakers at each event, to determine if there are any trends in gender representation over time.
 
 The first task, then, is to read in these data. We can do this with the `read_csv()` function.
 
@@ -75,7 +75,7 @@ And then:
 glimpse(edbfdata)
 ```
 
-We can see that the description of each event is included in a column named "description" and the year of that event as "year." So for now we'll just keep these two. Remember: we're interested in this tutorial firstly in the representation of gender and feminism in forms of cultural production given a platform at the Edinburgh International Book Festival. Given this, we are first and foremost interested in the reported content of each artist's event.
+We can see that the description of each event is included in a column named "description" and the year of that event as "year." So for now we'll just keep these two. Remember: we're interested in this exercise firstly in the representation of gender and feminism in forms of cultural production given a platform at the Edinburgh International Book Festival. Given this, we are first and foremost interested in the reported content of each artist's event.
 
 We use pipe `%>%` functions in the tidyverse package to quickly and efficiently select the columns we want from the edbfdata data.frame object. We pass this data to a new data.frame object, which we call "evdes."
 
