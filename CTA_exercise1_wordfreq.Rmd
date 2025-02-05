@@ -1,7 +1,7 @@
 ---
 title: "CTA_exercise1_wordfreq"
-author: "Marion Lieutaud"
-date: "1/31/2024"
+author: "Bizhou Zhang"
+date: "2/4/2025"
 output: html_document
 ---
 
@@ -458,7 +458,65 @@ ggplot(edbf_counts_both, aes(year, sum_wom / year_total, group=genre, color=genr
 2. Choose another set of terms by which to filter (e.g., race-related words) and plot their frequency over time.
 
 ```{r}
-# show me
+# 首先复用之前的数据处理步骤
+evdes_race <- edbfdata %>%
+  select(description, year, genre)
+
+tidy_des_race <- evdes_race %>% 
+  mutate(desc = tolower(description)) %>%
+  unnest_tokens(word, desc) %>%
+  filter(str_detect(word, "[a-z]"))
+
+tidy_des_race <- tidy_des_race %>%
+  filter(!word %in% stop_words$word) %>%
+  filter(!word %in% remove_reg)
+
+edbf_term_counts_race <- tidy_des_race %>% 
+  group_by(year, genre) %>%
+  count(word, sort = TRUE)
+
+# 定义种族相关词汇
+edbf_term_counts_race$raceword <- as.integer(grepl("race|racial|racist|racism|ethnic|diversity|multicultural|discrimination|prejudice|minority|black|asian|indigenous|immigration|colonial|colonialism", 
+                                            x = edbf_term_counts_race$word))
+
+# 计算总体趋势
+edbf_counts_race <- edbf_term_counts_race %>%
+  group_by(year) %>%
+  mutate(year_total = sum(n)) %>%
+  filter(raceword==1) %>%
+  summarise(sum_race = sum(n),
+            year_total= min(year_total))
+
+# 绘制总体趋势图
+ggplot(edbf_counts_race, aes(year, sum_race / year_total, group=1)) +
+  geom_line() +
+  geom_vline(xintercept = 2020, col="red", linetype="dashed") +  # 2020年标记线
+  xlab("Year") +
+  ylab("% race-related words") +
+  scale_y_continuous(labels = scales::percent_format(),
+                     expand = c(0, 0), limits = c(0, NA)) +
+  theme_tufte(base_family = "Helvetica") 
+
+# 按类型分析趋势
+edbf_counts_race_genre <- edbf_term_counts_race %>%
+  group_by(year, genre) %>%
+  mutate(year_total = sum(n)) %>%
+  filter(raceword==1) %>%
+  summarise(sum_race = sum(n),
+            year_total= min(year_total))
+
+# 绘制不同类型的对比图
+ggplot(edbf_counts_race_genre, 
+       aes(year, sum_race / year_total, 
+           group=genre, color=genre)) +
+  geom_line() +
+  geom_vline(xintercept = 2018, col="red", linetype="dashed") +  # 2018年标记线
+  xlab("Year") +
+  ylab("% race-related words") +
+  labs(color = "Genre") +  # 添加图例标题
+  scale_y_continuous(labels = scales::percent_format(),
+                     expand = c(0, 0), limits = c(0, NA)) +
+  theme_tufte(base_family = "Helvetica")
 ```
 
 
