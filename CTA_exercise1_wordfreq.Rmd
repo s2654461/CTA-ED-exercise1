@@ -394,9 +394,12 @@ Do we notice anything about these names? What does this tell us about the potent
 1. Filter the books by genre (selecting e.g., "Literature" or "Children") and plot frequency of women-related words over time.
 
 ```{r}
-evdes_race <- edbfdata %>%
-  select(year, age_category)%>%
-  filter(age_category == "AGE 4 - 7")
+young <- edbfdata %>%
+  select(year, genre, age_category)%>%
+  filter(age_category %in% c("AGE 4 - 7", "AGE 6 - 10")) %>% 
+  filter(age_category == "AGE 4 - 7" | age_category == "AGE 6 - 10") %>%
+  head()
+
 ```
 
 ```{r}
