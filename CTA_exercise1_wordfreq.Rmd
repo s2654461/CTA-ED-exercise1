@@ -394,6 +394,12 @@ Do we notice anything about these names? What does this tell us about the potent
 1. Filter the books by genre (selecting e.g., "Literature" or "Children") and plot frequency of women-related words over time.
 
 ```{r}
+evdes_race <- edbfdata %>%
+  select(year, age_category)%>%
+  filter(age_category == "AGE 4 - 7")
+```
+
+```{r}
 # Go through the same process. I've highlighted the differences
 evdes_genre <- edbfdata %>%
   select(description, year, genre) # but include genre variable here
@@ -454,6 +460,11 @@ ggplot(edbf_counts_both, aes(year, sum_wom / year_total, group=genre, color=genr
   theme_tufte(base_family = "Helvetica") 
 ```
 
+```{r}
+evdes_race <- edbfdata %>%
+  select(year, age_category)%>%
+  filter(age_category == "AGE 4 - 7")
+```
 
 2. Choose another set of terms by which to filter (e.g., race-related words) and plot their frequency over time.
 
